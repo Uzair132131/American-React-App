@@ -3,11 +3,12 @@ import { FiMenu, FiPhone, FiX, FiMail, FiChevronDown } from "react-icons/fi";
 
 const menuItems = [
   { label: "Home" },
-  { label: "About" },
   {
-    label: "Services",
-    dropdown: ["Web Design", "Logo", "Branding", "SEO", "Ecommerce"],
+    label: "Packages",
+    dropdown: ["Web Design", "Logo", "Branding", "Ecommerce"],
   },
+  { label: "About" },
+
   { label: "Contact" },
 ];
 

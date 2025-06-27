@@ -1,12 +1,53 @@
-import React from "react";
+import React, { useRef, useState } from "react";
+import emailjs from "@emailjs/browser";
+import ThankYouModal from "./ThankYouModal";
 
 const Hero = () => {
+  const formRef = useRef();
+  const [isSending, setIsSending] = useState(false);
+  const [showFormModal, setShowFormModal] = useState(false);
+  const [showThankYou, setShowThankYou] = useState(false);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setIsSending(true);
+    emailjs
+      .sendForm(
+        "service_meniodp", // Replace with your EmailJS service ID
+        "template_a1hkfvq", // Replace with your EmailJS template ID
+        formRef.current,
+        "UYoaxcSkke-Lmw0Zi" // Replace with your EmailJS public key
+      )
+      .then(
+        (result) => {
+          formRef.current.reset();
+          setIsSending(false);
+          setShowFormModal(false);
+          setShowThankYou(true);
+        },
+        (error) => {
+          alert("Failed to send message. Please try again.");
+          formRef.current.reset();
+          setIsSending(false);
+        }
+      );
+  };
+
+  const handleGetQuote = () => {
+    setShowFormModal(true);
+  };
+
+  const handleFormClose = () => {
+    setShowFormModal(false);
+  };
+
+  const handleThankYouClose = () => {
+    setShowThankYou(false);
+  };
+
   return (
     <div>
-      <div
-        className="main_div container-fluid"
-        style={{ position: "relative" }}
-      >
+      <div className="main_div container" style={{ position: "relative" }}>
         <svg
           className="hero-svg-blob-bg"
           viewBox="0 0 200 200"
@@ -18,32 +59,110 @@ const Hero = () => {
             transform="translate(100 100)"
           />
         </svg>
-        <div className="container">
+        <div
+          className="container"
+          style={{ justifyContent: "center", display: "flex" }}
+        >
           <div className="row">
-            <div className="col-lg-6 col-md-12 heading_div">
-              <h1 className="main_heading">
+            <div className="col-lg-6 col-md-12 heading_div fade-in-up">
+              <h1 className="main_heading fade-in">
                 Crafting Stunning Websites That Elevate Your Brand
               </h1>
-              <p className="main_sub_heading">
+              <p className="main_sub_heading fade-in-up">
                 Innovative designs, seamless user experiences, and custom
                 solutions tailored to grow your business online.
               </p>
-              <div className="btns_div">
-                <div className="btn btn_1">Get Quote</div>
+              <div className="btns_div fade-in-up">
+                <div className="btn btn_1" onClick={handleGetQuote}>
+                  Get Quote
+                </div>
                 <div className="btn btn_2"> View Packages </div>
               </div>
             </div>
-            <div className="col-lg-6 col-md-12 div_form_main">
+            <div className="col-lg-6 col-md-12 div_form_main text-center">
               <div className="form_div">
                 <div className="text_form_div text-center">
                   <h1 className="form_heading">Get 75% Off Now</h1>
                   <p className="form_subheading">Limited Time Offer</p>
+
+                  <form ref={formRef} onSubmit={handleSubmit}>
+                    <input
+                      type="text"
+                      placeholder="Name"
+                      name="user_name"
+                      required
+                    />
+                    <input
+                      type="email"
+                      placeholder="Email"
+                      name="user_email"
+                      required
+                    />
+                    <input
+                      type="number"
+                      placeholder="Phone No"
+                      name="user_phone"
+                      required
+                    />
+                    <textarea
+                      placeholder="Message"
+                      name="message"
+                      required
+                    ></textarea>
+
+                    <button type="submit" disabled={isSending}>
+                      {isSending ? "Sending..." : "Claim Free Consultation"}
+                    </button>
+                  </form>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+      {/* Order Form Modal */}
+      {showFormModal && (
+        <div className="order-modal-overlay" onClick={handleFormClose}>
+          <div
+            className="order-modal-content"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button className="order-modal-close" onClick={handleFormClose}>
+              ×
+            </button>
+            <h1 className="form_heading">Get a Quote</h1>
+            <p className="form_subheading">Fill the form to get started</p>
+            <form
+              ref={formRef}
+              onSubmit={handleSubmit}
+              className="order-modal-form"
+            >
+              <input type="text" placeholder="Name" name="user_name" required />
+              <input
+                type="email"
+                placeholder="Email"
+                name="user_email"
+                required
+              />
+              <input
+                type="number"
+                placeholder="Phone No"
+                name="user_phone"
+                required
+              />
+              <textarea
+                placeholder="Message"
+                name="message"
+                required
+              ></textarea>
+              <button type="submit" disabled={isSending}>
+                {isSending ? "Sending..." : "Get Quote"}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+      <ThankYouModal isOpen={showThankYou} onClose={handleThankYouClose} />
     </div>
   );
 };
